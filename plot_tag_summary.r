@@ -1,16 +1,6 @@
 # Function that plots a crude summary of a .tag file - No. of releases, recaptures and recapture rate
-plot.tag.summary = function(fdesc = read.table("C:/skj/2016/assessment/Setup/fdesc.txt", header=TRUE),
-                            tag = read.tag("C:/skj/2016/assessment/Model_Runs/run2014_1/skj.tag"), time.scl = "year")
+plot_tag_summary = function(tag = read.tag("C:/skj/2016/assessment/Model_Runs/run2014_1/skj.tag"), time.scl = "year")
 {
-    require(dplyr)
-    require(ggplot2)
-    require(reshape2)
-    require(magrittr)
-    require(R4MFCL)
-    require(scales)
-    require(grid)
-    require(stringr)  
-  
     theme_set(theme_bw())  
   
     # Take the .tag file, extract release lengths and add column names
