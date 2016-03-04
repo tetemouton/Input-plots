@@ -8,7 +8,7 @@ library(grid)
 library(stringr)  
 
 # Source in the functions needed
-# source("path_2_input_functions")
+    source("C:/Users/SamM/Desktop/GitHub_Desk/Input-plots/Input-plots/plot_tag_summary.r")
 
 # Read in key files
     fd <- read.table("C:/skj/2016/assessment/Setup/fdesc.txt", header=TRUE)
