@@ -74,8 +74,7 @@ plot_tag_summary = function(tag = read.tag("C:/skj/2016/assessment/Model_Runs/ru
                             plot.margin=unit(c(0.2,0.2,0.2,0.2), "cm"),
                             strip.text.x = element_text(size = 10, lineheight=3),
                             axis.title.x = element_blank())
-    
-    windows(2400,2000)    
+ 
         pushViewport(viewport(layout = grid.layout(3,5)))   # make a grid of 3 rows by 2 columns
         print(rel.pl, vp = viewport(layout.pos.row=1, layout.pos.col=1:3))
         print(rec.pl, vp = viewport(layout.pos.row=2, layout.pos.col=1:3))
