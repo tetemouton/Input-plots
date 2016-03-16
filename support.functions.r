@@ -161,39 +161,57 @@ plot.fishery = function(reg.keep=reg.keep, reg.highlight=reg.highlight, fishy=1,
 }
 
 
-size.dist.plot = function(dat=Ldat, sz.lab="len", fishery=1, exc.list=exc.list, all.yrs = seq(1960.125,2013.875,0.25), by_yr=FALSE, rnding=2)   # Calculates median size for each year there is data and puts into format that can be plotted
+size.dist.plot = function(dat=Ldat, sz.lab="len", fishery=1, exc.list=exc.list, all.yrs = seq(1960.125,2013.875,0.25), by_yr=FALSE, rnding=2, relativeP=TRUE)   # Calculates median size for each year there is data and puts into format that can be plotted
 {
   
   tmp.dat <- dat[dat$fsh == fishery,]
   tmp.dat <- tmp.dat[!(tmp.dat$FlgFlt %in% exc.list),]   # Excludes size samples for fleets where there are size samples but no catch - decides which to exclude based on the exc.list list in the working script
   
+  tmp.dat$Size <- floor(tmp.dat[,sz.lab]/rnding)*rnding
+  
   if(by_yr)
   {
-    tab.dat <- aggregate(tmp.dat$freq, by=list(yr = tmp.dat[,"yr"], Fleet = tmp.dat[,"FlgFlt"], Size = tmp.dat[,sz.lab]), FUN=sum) # aggregates number of samples at each size by year and fleet  
+    tab.dat <- aggregate(tmp.dat$freq, by=list(yr = tmp.dat[,"yr"], Size = tmp.dat$Size), FUN=sum) # aggregates number of samples at each size by year and fleet  
   } else {
-    tab.dat <- aggregate(tmp.dat$freq, by=list(yr = tmp.dat[,"yrqtr"], Fleet = tmp.dat[,"FlgFlt"], Size = tmp.dat[,sz.lab]), FUN=sum) # aggregates number of samples at each size by year and fleet     
+    tab.dat <- aggregate(tmp.dat$freq, by=list(yr = tmp.dat[,"yrqtr"], Size = tmp.dat$Size), FUN=sum) # aggregates number of samples at each size by year and fleet     
   }        
   
-  tab.dat$ind <- 1:dim(tab.dat)[1]
-  
-  new.ind <- rep(tab.dat$ind,tab.dat$x)   # Makes a variable that indicates how many samples there are for each size in that year/fleet
-  new.dat <- tab.dat[match(new.ind, tab.dat$ind),]   # Expands the dataset from tab.dat which is aggregated by length to a full dataset where each row is an individual fish
-  
-  #new.dat$JSize <- jitter(new.dat$Size, 3)
-  new.dat$RSize <- floor(new.dat$Size/rnding)*rnding
-  
-  p <- ggplot(data=new.dat, aes(x=yr, y=RSize, group=yr)) +
-              # geom_jitter(height=0, colour=alpha("black",0.002)) +
-              geom_violin(colour="transparent", fill=alpha("black",0.5), scale="width") +
-              xlab("Year") + ylab("Length (cm)") + xlim(fyr-2, lyr) +
-              scale_x_continuous(breaks=pretty_breaks(n=5)) +
-              theme(legend.key.size = unit(0.08,"cm"), legend.title=element_blank(), legend.justification=c(0,1), legend.position=c(0,1),
-                    legend.background = element_rect(fill="transparent"), panel.grid.major=element_blank(),
-                    panel.grid.minor=element_blank(), legend.key=element_rect(colour="transparent"))
-  
-  p <- ggplot(data=new.dat, aes(x=yr, y=RSize)) + geom_tile(aes(fill = Pfish)) +
-              xlab("Year") + ylab("Length (cm)") + xlim(fyr-2, lyr) +
-              scale_x_continuous(breaks=pretty_breaks(n=5)) +
+#   tab.dat$ind <- 1:dim(tab.dat)[1]
+#   
+#   new.ind <- rep(tab.dat$ind,tab.dat$x)   # Makes a variable that indicates how many samples there are for each size in that year/fleet
+#   new.dat <- tab.dat[match(new.ind, tab.dat$ind),]   # Expands the dataset from tab.dat which is aggregated by length to a full dataset where each row is an individual fish
+#   
+#   #new.dat$JSize <- jitter(new.dat$Size, 3)
+#   new.dat$RSize <- floor(new.dat$Size/rnding)*rnding
+#   
+#   p <- ggplot(data=new.dat, aes(x=yr, y=RSize, group=yr)) +
+#               # geom_jitter(height=0, colour=alpha("black",0.002)) +
+#               geom_violin(colour="transparent", fill=alpha("black",0.5), scale="width") +
+#               xlab("Year") + ylab("Length (cm)") + xlim(fyr-2, lyr) +
+#               scale_x_continuous(breaks=pretty_breaks(n=5)) +
+#               theme(legend.key.size = unit(0.08,"cm"), legend.title=element_blank(), legend.justification=c(0,1), legend.position=c(0,1),
+#                     legend.background = element_rect(fill="transparent"), panel.grid.major=element_blank(),
+#                     panel.grid.minor=element_blank(), legend.key=element_rect(colour="transparent"))
+#   
+
+  if(relativeP) tab.dat %<>% group_by(yr) %>% mutate(Nfish = sum(x), x = x/Nfish) 
+
+  yrseq <- seq(fyr-2, lyr, 1)
+  which.mis <- which(!yrseq %in% unique(tab.dat$yr))
+
+  for(i in which.mis)
+  {
+    tmp <- tab.dat[nrow(tab.dat), ]
+    tmp$yr <- yrseq[i]
+    tmp$x <- 0
+    tmp$Size <- 999
+    tab.dat <- rbind(tab.dat, tmp)
+  }  
+    
+  p <- ggplot(data=tab.dat, aes(x=yr, y=Size)) + geom_tile(aes(fill = x)) +
+              xlab("Year") + ylab("Length (cm)") + xlim(fyr-2, lyr) + ylim(10,100) +
+              scale_x_continuous(breaks=pretty_breaks(n=5)) + scale_fill_gradientn(colours = terrain.colors(6), trans = "sqrt") +
+              #scale_x_continuous(breaks=pretty_breaks(n=5)) + scale_fill_gradient2(low="grey", mid="yellow", high="blue", trans = "sqrt") +
               theme(legend.key.size = unit(0.08,"cm"), legend.title=element_blank(), legend.justification=c(0,1), legend.position=c(0,1),
                     legend.background = element_rect(fill="transparent"), panel.grid.major=element_blank(),
                     panel.grid.minor=element_blank(), legend.key=element_rect(colour="transparent"))

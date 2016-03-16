@@ -11,6 +11,8 @@ library(mapplots)
 library(mapproj)
 library(mapdata)
 library(rgl)
+library(magrittr)
+library(dplyr)
 
 # Set the drive that is being worked off, if on my compter work off the C:/ else work off penguin
     drv <- ifelse(Sys.info()["nodename"] == "SPC122114", "C:/skj/2016", "//penguin/assessments/skj/2016")
@@ -121,7 +123,7 @@ library(rgl)
     }
     
     
-    sil <- lapply(1:2, generate.fsh.plot)
+    sil <- lapply(1:length(fsh.reg), generate.fsh.plot)
 
 
 
