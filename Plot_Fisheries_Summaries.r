@@ -3,16 +3,14 @@ library(scales)
 library(ggplot2)
 library(MASS)
 library(reshape2)
-library(plyr)
 library(grid)
 library(ggmap)
+library(plyr)
 library(maps)
-library(mapplots)
 library(mapproj)
-library(mapdata)
-library(rgl)
 library(magrittr)
 library(dplyr)
+
 
 # Set the drive that is being worked off, if on my compter work off the C:/ else work off penguin
     drv <- ifelse(Sys.info()["nodename"] == "SPC122114", "C:/skj/2016", "//penguin/assessments/skj/2016")
@@ -64,14 +62,14 @@ library(dplyr)
     lfile = paste(mod, "_LF.csv", sep='') # Defines the name of the file containing the length data for the different fisheries
 
     Cdat = read.csv(cfile, header=TRUE)          # load catch data
-    Cdat = rename(Cdat, c("yy"="yr"))        # rename variables to make things easier for functions later on
+    Cdat = rename(Cdat, yr=yy)        # rename variables to make things easier for functions later on
     Cdat = ExpandDat(dat=Cdat, year.lab="yr", fisheries=fisheries, first.yr=fyr, last.yr=lyr)    # calls function that cleans and reshapes the data
 
     Ldat = read.csv(lfile, header=TRUE)                                         # Loads length data
     Ldat = ExpandDat(dat=Ldat, year.lab="yr", fisheries=fisheries, first.yr=fyr, last.yr=lyr)   # calls function that cleans and reshapes the data
     Ldat$len = as.numeric(as.character(Ldat$len))
     Ldat = Ldat[Ldat$len >= Lrange[1] & Ldat$len < Lrange[2],]                           # culls data outside size range used in assessment
-    Ldat = rename(Ldat, c('lf_samples' = 'freq'))
+    Ldat = rename(Ldat, freq = lf_samples)
     L.avail = ifelse(is.na(match(fisheries, Ldat$fsh))=='TRUE',0,1)     # creates variable which indicates the availability of data, prevents crashing if there's no data
 
 # Defines some colours for the different fleets
@@ -86,11 +84,11 @@ library(dplyr)
     names(collist) = sort(unique(c(Cdat$FlgFlt,Ldat$FlgFlt)))         # Gives the colours names so that the fleets can be matched to a colour and the colour can be kept consistent between plots
 
 # The actual function that does it all and produces the plots
-    generate.fsh.plot = function(fishery=1, prelim.filenm="//penguin/assessments/skj/2016/assessment/Data_preperation/Fisheries_Structure/5Reg/FshPlot_F")
+    generate.fsh.plot = function(fishery=1, prelim.filenm=paste0(drv, "/assessments/skj/2016/assessment/Data_preperation/Fisheries_Structure/5Reg/FshPlot_F"))
     {
         Fsh.plot <- plot.fishery(reg.keep=regKeep, reg.highlight=regHigh, fishy=fishery, reg_defs=reg_defs)   # makes the map of the fishery
         
-        C.plot <- Catch.Plot(dat=Cdat, fishery=fishery, collist=collist, all.yrs = 1970:2013, brwidth = 1)                              # makes the plot of the number or weight of the fish caught
+        C.plot <- Catch.Plot(dat=Cdat, fishery=fishery, collist=collist, all.yrs = 1970:2015, brwidth = 1)                              # makes the plot of the number or weight of the fish caught
         
         if(L.avail[fishery] == 1)   # if there are length samples then plot the number of samples and the median size of the samples
         {
@@ -122,13 +120,12 @@ library(dplyr)
         dev.off()
     }
     
-    
-    sil <- lapply(1:length(fsh.reg), generate.fsh.plot)
-
+# Main model    
+    for(i in 1:length(fsh.reg)) generate.fsh.plot(i, prelim.filenm=paste0(drv, "/assessment/Data_preperation/Fisheries_Structure/5Reg/FshPlot_F"))
 
 
 # Alternative plots to check the JP only P fishery in R2 assumption
-    for(i in 1:length(fsh.reg)) generage.fsh.plot(i, prelim.filenm="//penguin/assessments/skj/2016/assessment/Data_preperation/Fisheries_Structure/5Reg_Alt/FshPlot_F")
+#    for(i in 1:length(fsh.reg)) generate.fsh.plot(i, prelim.filenm=paste0(drv, "/assessment/Data_preperation/Fisheries_Structure/5Reg_Alt/FshPlot_F"))
 
 
 # Alternative spatial structure plots

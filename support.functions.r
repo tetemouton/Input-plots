@@ -1,14 +1,14 @@
 
-ExpandDat = function(dat=cdat, year.lab="yr", fisheries=1:30, first.yr=1960, last.yr=2013)   # year.lab now effectively redundant but left it in out of laziness
+ExpandDat = function(dat=cdat, year.lab="yr", fisheries=1:30, first.yr=1960, last.yr=2015)   # year.lab now effectively redundant but left it in out of laziness
 {
     dat <- dat[dat$fishery_no %in% fisheries,]                                   # Excludes data not in fisheries
     dat <- dat[dat[,year.lab] >= first.yr & dat[,year.lab] <= last.yr,]               # Excludes data before 1960
     dat$yrqtr <- dat[,year.lab] + dat$qq/4 - 0.125
     dat$FlgFlt <- paste(dat$flag_id, dat$fleet_id)
-    rename(dat, c("fishery_no" = "fsh"))
+    rename(dat, fsh = fishery_no)
 }
 
-create.N.tab = function(dat=Ldat, fishery=1, exc.list=exc.list, all.yrs=seq(1960.125,2013.875,0.25), by_yr=FALSE)   # Gets data into the right form to produce the number of samples plots
+create.N.tab = function(dat=Ldat, fishery=1, exc.list=exc.list, all.yrs=seq(1960.125,2015.875,0.25), by_yr=FALSE)   # Gets data into the right form to produce the number of samples plots
 {                                               # makes sure that if there is no data in a certain year then there is an NA and hence ggplot plots a zero
     tmp.dat <- dat[dat$fsh == fishery,]
     tmp.dat <- tmp.dat[!(tmp.dat$FlgFlt %in% exc.list),]   # Excludes size samples for fleets where there are size samples but no catch - decides which to exclude based on the exc.list list in the working script
@@ -28,7 +28,7 @@ create.N.tab = function(dat=Ldat, fishery=1, exc.list=exc.list, all.yrs=seq(1960
 }
 
 
-create.Med.tab = function(dat=Ldat, sz.lab="len", fishery=1, exc.list=exc.list, all.yrs = seq(1960.125,2013.875,0.25), by_yr=FALSE)   # Calculates median size for each year there is data and puts into format that can be plotted
+create.Med.tab = function(dat=Ldat, sz.lab="len", fishery=1, exc.list=exc.list, all.yrs = seq(1960.125,2015.875,0.25), by_yr=FALSE)   # Calculates median size for each year there is data and puts into format that can be plotted
 {
     tmp.dat <- dat[dat$fsh == fishery,]
     tmp.dat <- tmp.dat[!(tmp.dat$FlgFlt %in% exc.list),]   # Excludes size samples for fleets where there are size samples but no catch - decides which to exclude based on the exc.list list in the working script
@@ -55,7 +55,7 @@ create.Med.tab = function(dat=Ldat, sz.lab="len", fishery=1, exc.list=exc.list, 
 
 
 
-Catch.Plot = function(dat=dat, fishery=1, collist=collist, all.yrs = 1970:2013, brwidth = 0.9)   # Calculates and plots catch of a fishery by year and fleet
+Catch.Plot = function(dat=dat, fishery=1, collist=collist, all.yrs = 1970:2015, brwidth = 0.9)   # Calculates and plots catch of a fishery by year and fleet
 {
     tmp.dat <- dat[dat$fsh == fishery,]    
 
@@ -69,7 +69,7 @@ Catch.Plot = function(dat=dat, fishery=1, collist=collist, all.yrs = 1970:2013, 
     yr.match <- match(all.yrs, rownames(tab.dat))
       tab.dat <- data.frame("yr"=as.character(all.yrs), tab.dat[yr.match,],row.names=NULL); names(tab.dat) = c("yr",sort(unique(tmp.dat$FlgFlt)))
         tab.dat <- melt(tab.dat, id.vars="yr", measure.vars=dimnames(tab.dat)[[2]][-1]); names(tab.dat) = c("yr","Fleet","Nsamples")  # put into long format for plotting
-          Ncol <- ifelse(length(unique(tab.dat$Fleet)) > 16, 2, 1)   # This determines how many columns the legend is - if there are heaps of fleets (e.g. some ps fisheries) then the legend is 2 columns, otherwise just one
+          Ncol <- ifelse(length(unique(tab.dat$Fleet)) > 14, 2, 1)   # This determines how many columns the legend is - if there are heaps of fleets (e.g. some ps fisheries) then the legend is 2 columns, otherwise just one
     
       p <- ggplot(data=tab.dat, aes(x=yr, y=Nsamples/1000, fill=Fleet)) +   # Divide by 1000 to keep the y scale managable
                   geom_bar(stat="identity", colour="black", width=brwidth) +
@@ -95,7 +95,8 @@ Catch.Plot = function(dat=dat, fishery=1, collist=collist, all.yrs = 1970:2013, 
 Sz.N.Plot <- function(tab.dat=L.N.tab, y.lab="No. fish measured", collist=collist, xbrks=seq(1970, 2010, 10), brwidth = 0.9)   # Makes a plot of the number of size samples for a fishery - bar plot
 {
     tab.dat$yr <- as.character(tab.dat$yr)
-
+    Ncol <- ifelse(length(unique(tab.dat$Fleet)) > 14, 2, 1)   # This determines how many columns the legend is - if there are heaps of fleets (e.g. some ps fisheries) then the legend is 2 columns, otherwise just one
+    
         p <- ggplot(data=tab.dat, aes(x=yr, y=Nsamples, fill=Fleet)) +
                     geom_bar(stat="identity", colour="black", width=brwidth) +
                     scale_fill_manual(name="Fleet", values=collist) +
@@ -103,14 +104,16 @@ Sz.N.Plot <- function(tab.dat=L.N.tab, y.lab="No. fish measured", collist=collis
                     scale_x_discrete(breaks=xbrks, labels=xbrks) +
                     theme(legend.key.size = unit(0.08,"cm"), legend.title=element_blank(), legend.justification=c(0,1), legend.position=c(0,1),
                           legend.background = element_rect(fill="transparent"), panel.grid.major=element_blank(),
-                          panel.grid.minor=element_blank())
+                          panel.grid.minor=element_blank()) +
+                    guides(fill=guide_legend(ncol=Ncol))       # insert legend for fleets, and determine columns from Ncol
         p
 }
 
 Sz.Med.Plot <- function(tmp.med=L.Med.tab, y.lab="Median length (cm)", collist=collist)   # Makes a plot of the median sizes for a fishery - line plot
 {
     tmp.med$yr <- as.numeric(as.character(tmp.med$yr))
-
+    Ncol <- ifelse(length(unique(tmp.med$Fleet)) > 14, 2, 1)   # This determines how many columns the legend is - if there are heaps of fleets (e.g. some ps fisheries) then the legend is 2 columns, otherwise just one
+    
         p <- ggplot(data=tmp.med, aes(x=yr, y=Size, colour=Fleet)) +
                     geom_point() +
                     geom_line() +
@@ -119,8 +122,9 @@ Sz.Med.Plot <- function(tmp.med=L.Med.tab, y.lab="Median length (cm)", collist=c
                     scale_x_continuous(breaks=pretty_breaks(n=5)) +
                     theme(legend.key.size = unit(0.08,"cm"), legend.title=element_blank(), legend.justification=c(0,1), legend.position=c(0,1),
                           legend.background = element_rect(fill="transparent"), panel.grid.major=element_blank(),
-                          panel.grid.minor=element_blank(), legend.key=element_rect(colour="transparent"))
-        p
+                          panel.grid.minor=element_blank(), legend.key=element_rect(colour="transparent")) +
+                    guides(colour=guide_legend(ncol=Ncol))       # insert legend for fleets, and determine columns from Ncol
+    p
 }
 
 # This function plots the map of the spatial extent of the individual fisheries
@@ -161,7 +165,7 @@ plot.fishery = function(reg.keep=reg.keep, reg.highlight=reg.highlight, fishy=1,
 }
 
 
-size.dist.plot = function(dat=Ldat, sz.lab="len", fishery=1, exc.list=exc.list, all.yrs = seq(1960.125,2013.875,0.25), by_yr=FALSE, rnding=2, relativeP=TRUE)   # Calculates median size for each year there is data and puts into format that can be plotted
+size.dist.plot = function(dat=Ldat, sz.lab="len", fishery=1, exc.list=exc.list, all.yrs = seq(1960.125,2015.875,0.25), by_yr=FALSE, rnding=2, relativeP=TRUE)   # Calculates median size for each year there is data and puts into format that can be plotted
 {
   
   tmp.dat <- dat[dat$fsh == fishery,]
@@ -210,9 +214,9 @@ size.dist.plot = function(dat=Ldat, sz.lab="len", fishery=1, exc.list=exc.list, 
     
   p <- ggplot(data=tab.dat, aes(x=yr, y=Size)) + geom_tile(aes(fill = x)) +
               xlab("Year") + ylab("Length (cm)") + xlim(fyr-2, lyr) + ylim(10,100) +
-              scale_x_continuous(breaks=pretty_breaks(n=5)) + scale_fill_gradientn(colours = terrain.colors(6), trans = "sqrt") +
-              #scale_x_continuous(breaks=pretty_breaks(n=5)) + scale_fill_gradient2(low="grey", mid="yellow", high="blue", trans = "sqrt") +
-              theme(legend.key.size = unit(0.08,"cm"), legend.title=element_blank(), legend.justification=c(0,1), legend.position=c(0,1),
+              #scale_x_continuous(breaks=pretty_breaks(n=5)) + scale_fill_gradientn(colours = terrain.colors(6), trans = "sqrt") +
+              scale_x_continuous(breaks=pretty_breaks(n=5)) + scale_fill_gradient2(low="grey", mid="blue", high="white", trans = "sqrt") +
+              theme(legend.key.size = unit(0.6,"cm"), legend.title=element_blank(), legend.justification=c(0,1), legend.position=c(0,1),
                     legend.background = element_rect(fill="transparent"), panel.grid.major=element_blank(),
                     panel.grid.minor=element_blank(), legend.key=element_rect(colour="transparent"))
   
