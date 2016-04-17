@@ -33,12 +33,14 @@ library(dplyr)
 
 # List below explicitely links the 33 fisheries to the regions they are in. Note some in R7 don't cover the whole region so have to state thier subregions
     #fsh.dat <- data.frame(reg = c(1,1,1,2,2,2,2,5,5,5,5,3,3,3,3,4,4,4,4,4,4,4,4))
-    fsh.reg = c(1,1,1,2,2,2,2,5,5,5,5,3,3,3,3,4,4,4,4,4,4,4,4)
+    fsh.reg <- c(1,1,1,2,2,2,2,5,5,5,5,3,3,3,3,4,4,4,4,4,4,4,4)
 #    fsh.reg = c(1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,NA,4,5,5,5,5,6,6,6,6,6,7,7,7,4,4)
-
 
     regHigh <- lapply(1:length(fsh.reg), function(x) reg_defs$MufArea[fsh.reg[x] == reg_defs$reg])
 
+# Use labels.tmp to provide plot titles
+    tmp.titles <- read.table("labels.tmp", header = FALSE, sep = ".")
+    Ftit <- paste0("F", tmp.titles[,1], " ", gsub("\t", "", tmp.titles[,2]))
 
 # Exclusion lists
 # There are some cases where size data exists for a fleet that does not have catch in that fishery - might be a scale problem, data entry etc. etc. - all very minor so removed
@@ -88,7 +90,7 @@ library(dplyr)
     {
         Fsh.plot <- plot.fishery(reg.keep=regKeep, reg.highlight=regHigh, fishy=fishery, reg_defs=reg_defs)   # makes the map of the fishery
         
-        C.plot <- Catch.Plot(dat=Cdat, fishery=fishery, collist=collist, all.yrs = 1970:2015, brwidth = 1)                              # makes the plot of the number or weight of the fish caught
+        C.plot <- Catch.Plot(dat=Cdat, fishery=fishery, collist=collist, all.yrs = 1970:2015, brwidth = 1, Fsh.title = Ftit[fishery])   # makes the plot of the number or weight of the fish caught
         
         if(L.avail[fishery] == 1)   # if there are length samples then plot the number of samples and the median size of the samples
         {

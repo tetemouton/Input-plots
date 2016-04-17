@@ -55,7 +55,7 @@ create.Med.tab = function(dat=Ldat, sz.lab="len", fishery=1, exc.list=exc.list, 
 
 
 
-Catch.Plot = function(dat=dat, fishery=1, collist=collist, all.yrs = 1970:2015, brwidth = 0.9)   # Calculates and plots catch of a fishery by year and fleet
+Catch.Plot = function(dat=dat, fishery=1, collist=collist, all.yrs = 1970:2015, brwidth = 0.9, Fsh.title = "PL R1")   # Calculates and plots catch of a fishery by year and fleet
 {
     tmp.dat <- dat[dat$fsh == fishery,]    
 
@@ -85,7 +85,7 @@ Catch.Plot = function(dat=dat, fishery=1, collist=collist, all.yrs = 1970:2015, 
                    theme(legend.key.size = unit(0.08,"cm"), legend.title=element_blank(), legend.justification=c(0,1), legend.position=c(0,1),
                          legend.background = element_rect(fill="transparent"), panel.grid.major=element_blank(),
                          panel.grid.minor=element_blank()) +  # make legend unit size small else it takes up too much room
-                   ggtitle(paste("Fishery",fishery)) +        # plot the fishery name as the title - in future might be nice to give the actual fishery name e.g. all_flag_3 etc.
+                   ggtitle(Fsh.title) +        # plot the fishery name as the title - in future might be nice to give the actual fishery name e.g. all_flag_3 etc.
                    guides(fill=guide_legend(ncol=Ncol))       # insert legend for fleets, and determine columns from Ncol
       p
 }
