@@ -40,6 +40,7 @@ library(dplyr)
 
 # Use labels.tmp to provide plot titles
     tmp.titles <- read.table("labels.tmp", header = FALSE, sep = ".")
+    # tmp.titles <- read.table("labels_alt.tmp", header = FALSE, sep = ".")
     Ftit <- paste0("F", tmp.titles[,1], " ", gsub("\t", "", tmp.titles[,2]))
 
 # Exclusion lists
