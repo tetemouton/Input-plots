@@ -1,5 +1,5 @@
 # Function to broadly compare two .tag files
-plot_compare_tags = function(tag1 = read.tag("C:/skj/2016/assessment/Model_Runs/run2014_1/skj.tag"),
+plot_compare_tags = function(tag1 = read.tag("C:/skj/2016/assessment/Model_Runs/Old/run2014_1/skj.tag"),
                              tag2 = read.tag("//penguin/assessments/skj/2016/assessment/Data_preperation/MFDGR/SKJ_tempory.tag"),
                              fln = c("2014", "2016"), prg.fm = c("JPTP","m JP"), prg.to = "JPTP")
 {

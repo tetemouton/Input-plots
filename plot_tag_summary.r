@@ -1,5 +1,5 @@
 # Function that plots a crude summary of a .tag file - No. of releases, recaptures and recapture rate
-plot_tag_summary = function(tag = read.tag("C:/skj/2016/assessment/Model_Runs/run2014_1/skj.tag"), time.scl = "year")
+plot_tag_summary = function(tag = read.tag("//penguin/assessments/skj/2016/assessment/Data_preperation/MFDGR/SKJ_tempory.tag"), time.scl = "year")
 {
     theme_set(theme_bw())  
   
@@ -42,7 +42,7 @@ plot_tag_summary = function(tag = read.tag("C:/skj/2016/assessment/Model_Runs/ru
     
     
     rel.pl <- ggplot(data=tmpdat, aes(x=yrqtr, y=Trel/1000)) + geom_bar(stat="identity", width=0.25, colour="black", fill="#6699CC") +
-                     scale_fill_brewer(palette="Set2") + facet_wrap(~ Program, scales="free") + ylab("No. fish (x 1000)") +
+                     scale_fill_brewer(palette="Set2") + facet_wrap(~ Program) + ylab("No. fish (x 1000)") +
                      scale_x_continuous(breaks=pretty_breaks(n=3)) + scale_y_continuous(breaks=pretty_breaks(n=3)) + ggtitle("Releases") +
                      theme(legend.position="none",
                            plot.title=element_text(colour=grey(0.3), size = 12),
@@ -53,7 +53,7 @@ plot_tag_summary = function(tag = read.tag("C:/skj/2016/assessment/Model_Runs/ru
                            axis.title.x = element_blank())
     
     rec.pl <- ggplot(data=tmpdat, aes(x=yrqtr, y=Trec/1000)) + geom_bar(stat="identity", width=0.25, colour="black", fill="#6699CC") +
-                     scale_fill_brewer(palette="Set2") + facet_wrap(~ Program, scales="free") + ylab("No. fish (x 1000)") +
+                     scale_fill_brewer(palette="Set2") + facet_wrap(~ Program) + ylab("No. fish (x 1000)") +
                      scale_x_continuous(breaks=pretty_breaks(n=3)) + scale_y_continuous(breaks=pretty_breaks(n=3)) + ggtitle("Recaptures") +
                      theme(legend.position="none",
                            plot.title=element_text(colour=grey(0.3), size = 12),
@@ -63,9 +63,9 @@ plot_tag_summary = function(tag = read.tag("C:/skj/2016/assessment/Model_Runs/ru
                            strip.text.x = element_text(size = 10, lineheight=3),
                            axis.title.x = element_blank())
     
-    Prec.pl <- ggplot(data=tmpdat, aes(x=yrqtr, y=Prec)) + geom_hline(yintercept=1, colour=alpha("grey",0.5), size=1) +
+    Prec.pl <- ggplot(data=tmpdat, aes(x=yrqtr, y=Prec)) + #geom_hline(yintercept=1, colour=alpha("grey",0.5), size=1) +
                       scale_colour_brewer(palette="Set2") + geom_bar(stat="identity", width=0.25, colour="black", fill="#6699CC") +
-                      facet_wrap(~ Program, scales="free") + ylab("P(recaptured)") + ggtitle("Recapture rate") +
+                      facet_wrap(~ Program) + ylab("P(recaptured)") + ggtitle("Recapture rate") +
                       scale_x_continuous(breaks=pretty_breaks(n=3)) + scale_y_continuous(breaks=pretty_breaks(n=3)) +
                       theme(legend.position="none",
                             plot.title=element_text(colour=grey(0.3), size = 12),
@@ -75,10 +75,10 @@ plot_tag_summary = function(tag = read.tag("C:/skj/2016/assessment/Model_Runs/ru
                             strip.text.x = element_text(size = 10, lineheight=3),
                             axis.title.x = element_blank())
  
-        pushViewport(viewport(layout = grid.layout(3,5)))   # make a grid of 3 rows by 2 columns
-        print(rel.pl, vp = viewport(layout.pos.row=1, layout.pos.col=1:3))
-        print(rec.pl, vp = viewport(layout.pos.row=2, layout.pos.col=1:3))
-        print(Prec.pl, vp=viewport(layout.pos.row=3, layout.pos.col=1:3))        
-        print(reg.pl, vp=viewport(layout.pos.row=1:3, layout.pos.col=4:5))
+        pushViewport(viewport(layout = grid.layout(3,6)))   # make a grid of 3 rows by 2 columns
+        print(rel.pl, vp = viewport(layout.pos.row=1, layout.pos.col=1:4))
+        print(rec.pl, vp = viewport(layout.pos.row=2, layout.pos.col=1:4))
+        print(Prec.pl, vp=viewport(layout.pos.row=3, layout.pos.col=1:4))        
+        print(reg.pl, vp=viewport(layout.pos.row=1:3, layout.pos.col=5:6))
     
 }

@@ -1,7 +1,7 @@
 # Function that plots a summary of the length compositions of released fish by program and region and
 # A movement matrix showing observed movement transition rates between regions for tagged fish
     plot_sizes_movement_tags = function(fdesc = read.table("C:/skj/2016/assessment/Setup/fdesc.txt", header=TRUE),
-                                        tag = read.tag("C:/skj/2016/assessment/Model_Runs/run2014_1/skj.tag"))
+                                        tag = read.tag("//penguin/assessments/skj/2016/assessment/Data_preperation/MFDGR/SKJ_tempory.tag"))
     {
         theme_set(theme_bw())  
         
@@ -26,8 +26,6 @@
         tagdat$Region <- paste("Region", tagdat$region)
         
         # Define time scale to be plotted based on the argument list
-       # tagdat$time <- tagdat[, time.scl]
-        
         recmat <- tag$rel.recov %>% group_by(grp, len) %>% summarise(recN = sum(n)) %>%
                                     dcast(grp ~ len, value.var="recN")
         
@@ -52,7 +50,7 @@
     
         tmprelL <- rbind(tmprelL, tmprecL) %>% mutate(len2 = as.numeric(as.character(len)))
     
-    
+   
         relL.pl2 <- ggplot(data=tmprelL, aes(x=len2, y=N, fill=Category)) + geom_vline(xintercept=50, colour=alpha("grey",0.7), size=0.8) +
                            geom_density(stat="identity") + scale_fill_manual(values=c(alpha("blue",0.7),alpha("red",0.3))) +#geom_line() + geom_point() + #geom_point(aes(size=Nrel)) +
                            facet_grid(region ~ Program, scales="free_y") + scale_y_continuous(breaks=pretty_breaks(n=2)) +  
@@ -82,7 +80,6 @@
             pushViewport(viewport(layout = grid.layout(2,5)))   # make a grid of 2 rows by 2 columns
             print(mat.pl, vp = viewport(layout.pos.row=1, layout.pos.col=1:4))
             print(relL.pl2, vp = viewport(layout.pos.row=2, layout.pos.col=1:5))
-
 }
 
 
