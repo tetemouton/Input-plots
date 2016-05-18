@@ -16,7 +16,8 @@ library(dplyr)
     drv <- ifelse(Sys.info()["nodename"] == "SPC122114", "C:/skj/2016", "//penguin/assessments/skj/2016")
 
     setwd(paste0(drv, "/assessment/Data_preperation/Fisheries_Structure"))
-    source("support.functions.r")
+    #source("support.functions.r")
+    source("C:/Users/SamM/Desktop/GitHub_Desk/Input-plots/Input-plots/support.functions.r")
     
     theme_set(theme_bw())
     
@@ -34,7 +35,7 @@ library(dplyr)
 # List below explicitely links the 33 fisheries to the regions they are in. Note some in R7 don't cover the whole region so have to state thier subregions
     #fsh.dat <- data.frame(reg = c(1,1,1,2,2,2,2,5,5,5,5,3,3,3,3,4,4,4,4,4,4,4,4))
     fsh.reg <- c(1,1,1,2,2,2,2,5,5,5,5,3,3,3,3,4,4,4,4,4,4,4,4)
-#    fsh.reg = c(1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,NA,4,5,5,5,5,6,6,6,6,6,7,7,7,4,4)
+#    fsh.reg = c(1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,6,7,7,7)
 
     regHigh <- lapply(1:length(fsh.reg), function(x) reg_defs$MufArea[fsh.reg[x] == reg_defs$reg])
 
@@ -55,6 +56,7 @@ library(dplyr)
 # Define a couple of species specific parameters
     mod="SKJ_1_detail"
 #    mod="SKJ_3_detail"
+#    mod="SKJ_5_detail"
     fisheries=1:length(fsh.reg)
     Lrange=c(2,110)
     fyr=1975
@@ -127,12 +129,12 @@ library(dplyr)
     for(i in 1:length(fsh.reg)) generate.fsh.plot(i, prelim.filenm=paste0(drv, "/assessment/Data_preperation/Fisheries_Structure/5Reg/FshPlot_F"))
 
 
-# Alternative plots to check the JP only P fishery in R2 assumption
-#    for(i in 1:length(fsh.reg)) generate.fsh.plot(i, prelim.filenm=paste0(drv, "/assessment/Data_preperation/Fisheries_Structure/5Reg_Alt/FshPlot_F"))
+# Alternative plots to check alternative fisheries assumptions - LL fisheries, R2 pole and line and R4 fisheries
+    for(i in 1:length(fsh.reg)) generate.fsh.plot(i, prelim.filenm=paste0(drv, "/assessment/Data_preperation/Fisheries_Structure/5Reg_Alt/FshPlot_F"))
 
 
 # Alternative spatial structure plots
-    for(i in 27:32) generate.fsh.plot(i, prelim.filenm=paste0(drv, "/assessment/Data_preperation/Fisheries_Structure/5Reg_Alt/FshPlot_F"))
+    for(i in 15:29) generate.fsh.plot(i, prelim.filenm=paste0(drv, "/assessment/Data_preperation/Fisheries_Structure/7Reg_Alt/FshPlot_F"))
 
     
 
