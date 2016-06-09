@@ -134,7 +134,7 @@ library(dplyr)
 
 
 # Alternative spatial structure plots
-    for(i in 1:29) generate.fsh.plot(i, prelim.filenm=paste0(drv, "/assessment/Data_preperation/Fisheries_Structure/7Reg_Alt/FshPlot_F"))
+    for(i in 1:length(fsh.reg)) generate.fsh.plot(i, prelim.filenm=paste0(drv, "/assessment/Data_preperation/Fisheries_Structure/7Reg_Alt/FshPlot_F"))
 
     
 
