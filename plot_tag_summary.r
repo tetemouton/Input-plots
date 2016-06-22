@@ -30,7 +30,7 @@ plot_tag_summary = function(tag = read.tag("//penguin/assessments/skj/2016/asses
     regdat <- tagdat %>% group_by(time, Region) %>% summarise(Nrel = sum(Nrel)) %>% as.data.frame()
     
     reg.pl <- ggplot(data=regdat, aes(x=time, y=Nrel/1000)) + geom_bar(stat="identity", width=1, colour="black", fill="#99CCFF") + ggtitle("Releases by region") +
-                     scale_colour_brewer(palette="Set1") + facet_wrap(~ Region, ncol=1) + ylab("No. fish (x 1000)") +
+                     scale_colour_brewer(palette="Set1") + facet_wrap(~ Region, ncol=1, scales = "free_y") + ylab("No. fish (x 1000)") +
                      theme(legend.position="none",
                            plot.title=element_text(colour=grey(0.3), size = 12),
                            panel.grid.major=element_blank(),
@@ -42,7 +42,7 @@ plot_tag_summary = function(tag = read.tag("//penguin/assessments/skj/2016/asses
     
     
     rel.pl <- ggplot(data=tmpdat, aes(x=yrqtr, y=Trel/1000)) + geom_bar(stat="identity", width=0.25, colour="black", fill="#6699CC") +
-                     scale_fill_brewer(palette="Set2") + facet_wrap(~ Program) + ylab("No. fish (x 1000)") +
+                     scale_fill_brewer(palette="Set2") + facet_wrap(~ Program, scales = "free_y") + ylab("No. fish (x 1000)") +
                      scale_x_continuous(breaks=pretty_breaks(n=3)) + scale_y_continuous(breaks=pretty_breaks(n=3)) + ggtitle("Releases") +
                      theme(legend.position="none",
                            plot.title=element_text(colour=grey(0.3), size = 12),
@@ -53,7 +53,7 @@ plot_tag_summary = function(tag = read.tag("//penguin/assessments/skj/2016/asses
                            axis.title.x = element_blank())
     
     rec.pl <- ggplot(data=tmpdat, aes(x=yrqtr, y=Trec/1000)) + geom_bar(stat="identity", width=0.25, colour="black", fill="#6699CC") +
-                     scale_fill_brewer(palette="Set2") + facet_wrap(~ Program) + ylab("No. fish (x 1000)") +
+                     scale_fill_brewer(palette="Set2") + facet_wrap(~ Program, scales = "free_y") + ylab("No. fish (x 1000)") +
                      scale_x_continuous(breaks=pretty_breaks(n=3)) + scale_y_continuous(breaks=pretty_breaks(n=3)) + ggtitle("Recaptures") +
                      theme(legend.position="none",
                            plot.title=element_text(colour=grey(0.3), size = 12),
@@ -65,7 +65,7 @@ plot_tag_summary = function(tag = read.tag("//penguin/assessments/skj/2016/asses
     
     Prec.pl <- ggplot(data=tmpdat, aes(x=yrqtr, y=Prec)) + #geom_hline(yintercept=1, colour=alpha("grey",0.5), size=1) +
                       scale_colour_brewer(palette="Set2") + geom_bar(stat="identity", width=0.25, colour="black", fill="#6699CC") +
-                      facet_wrap(~ Program) + ylab("P(recaptured)") + ggtitle("Recapture rate") +
+                      facet_wrap(~ Program, scales = "free_y") + ylab("P(recaptured)") + ggtitle("Recapture rate") +
                       scale_x_continuous(breaks=pretty_breaks(n=3)) + scale_y_continuous(breaks=pretty_breaks(n=3)) +
                       theme(legend.position="none",
                             plot.title=element_text(colour=grey(0.3), size = 12),
