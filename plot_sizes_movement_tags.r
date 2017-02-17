@@ -1,6 +1,6 @@
 # Function that plots a summary of the length compositions of released fish by program and region and
 # A movement matrix showing observed movement transition rates between regions for tagged fish
-    plot_sizes_movement_tags = function(fdesc = read.table("C:/skj/2016/assessment/Setup/fdesc.txt", header=TRUE),
+    plot_sizes_movement_tags = function(fdesc = read.table("C:/skj/2016/assessment/Setup/fdesc.txt", header=TRUE), Nreg = 9,
                                         tag = read.tag("//penguin/assessments/skj/2016/assessment/Data_preperation/MFDGR/SKJ_tempory.tag"))
     {
         theme_set(theme_bw())  
@@ -60,13 +60,18 @@
                                  panel.grid.major=element_blank(),
                                  panel.grid.minor=element_blank())
     
-        movmat <- tag$rel.recov %>% mutate(relreg = tag$rel$reg[grp], recreg = fdesc$region[fsh]) %>% group_by(relreg, recreg) %>% summarise(recN = sum(n))
+        movmat <- tag$rel.recov %>% mutate(relreg = tag$rel$reg[grp], recreg = fdesc$region[fsh]) %>% group_by(relreg, recreg) %>% summarise(recN = sum(n)) %>% as.data.frame()
+        
+        tmpmat <- expand.grid(relreg=1:Nreg, recreg=1:Nreg) %>% mutate(recN = 0)
     
-        regtots <- movmat %>% group_by(relreg) %>% summarise(recN = sum(recN))
+        tmpmat <- rbind(movmat, tmpmat) %>% group_by(relreg, recreg) %>% summarise(recN = sum(recN)) %>% as.data.frame()
+        
+        regtots <- tmpmat %>% group_by(relreg) %>% summarise(recN = sum(recN))
     
-        movmat$Proportion <- movmat$recN/regtots$recN[movmat$relreg]
+        tmpmat$Proportion <- tmpmat$recN/regtots$recN[tmpmat$relreg]
+        tmpmat$Proportion <- ifelse(is.finite(tmpmat$Proportion), tmpmat$Proportion, 0)
     
-        mat.pl <- ggplot(movmat, aes(x=relreg, y=recreg)) + geom_tile(aes(fill=Proportion), colour = "black") + 
+        mat.pl <- ggplot(tmpmat, aes(x=relreg, y=recreg)) + geom_tile(aes(fill=Proportion), colour = "black") + 
                          scale_fill_gradient(low="white", high="red", trans="sqrt") +
                          geom_text(aes(label=recN)) + coord_equal() +
                          xlab("Release region") + ylab("Recapture region") +
