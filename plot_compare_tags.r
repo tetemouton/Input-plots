@@ -72,7 +72,7 @@ plot_compare_tags = function(tag1 = read.tag("C:/skj/2016/assessment/Model_Runs/
             panel.grid.minor = element_blank(),
             plot.margin=unit(c(0.1,0.1,0.1,0.1), "cm")) 
     
-    # Recaptures
+    # Recapture rate
     prccom <-tagdat %>% group_by(yrqtr, File, Program) %>% summarise(Nrel = sum(Nrel), Nrec = ifelse(is.na(sum(Nrec)), 0, sum(Nrec)), prec = Nrec/Nrel) %>%
       ggplot(aes(x=yrqtr, y=prec, colour=File)) + geom_line(size=0.5, aes(linetype=File)) +
       facet_wrap(~ Program, scales="free") + geom_point() + scale_colour_manual(values=c("#003399","#CC3366")) +
